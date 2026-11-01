@@ -35,9 +35,9 @@ function ScanPage() {
 
   async function handleScan(text: string) {
     const code = parseScannedCode(text);
-    if (!code) return toast.error("QR Code não reconhecido");
+    if (!code) { toast.error("QR Code não reconhecido"); return; }
     const { data } = await supabase.from("customers").select("id").eq("code", code).maybeSingle();
-    if (!data) return toast.error("Cliente não encontrado neste ponto");
+    if (!data) { toast.error("Cliente não encontrado neste ponto"); return; }
     navigate({ to: "/app/cliente/$id", params: { id: data.id } });
   }
 

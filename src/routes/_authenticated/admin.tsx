@@ -37,7 +37,7 @@ function Admin() {
   async function setPlan(id: string, plan: "trial" | "active" | "suspended", days?: number) {
     const expires = days ? new Date(Date.now() + days * 86400000).toISOString() : (null as unknown as string);
     const { error } = await supabase.rpc("admin_set_plan", { _vendor: id, _plan: plan, _expires: expires });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Plano atualizado");
     qc.invalidateQueries({ queryKey: ["admin-vendors"] });
   }

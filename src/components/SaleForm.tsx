@@ -38,7 +38,7 @@ export function SaleForm({ customerId, onDone }: { customerId?: string; onDone?:
       _take_now: customerId ? takeNow : true,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`Venda registrada: ${brl(total)}`);
     setQty({}); setComboId(null);
     qc.invalidateQueries();

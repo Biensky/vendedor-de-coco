@@ -61,7 +61,7 @@ function ProductRow({ p }: { p: Product }) {
   const [cost, setCost] = useState(p.cost == null ? "" : String(p.cost));
   async function save(patch: Partial<{ name: string; price: number; cost: number | null; active: boolean }>) {
     const { error } = await supabase.from("products").update(patch).eq("id", p.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["products"] });
   }
   return (
@@ -99,7 +99,7 @@ function Fidelidade() {
   async function save() {
     const payload = { ...f, product_id: f.product_id || null, reward_product_id: f.reward_product_id || null };
     const { error } = await supabase.from("loyalty").upsert(payload);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Programa salvo");
     qc.invalidateQueries({ queryKey: ["loyalty"] });
   }
@@ -146,7 +146,7 @@ function ComboEditor({ c }: { c: Combo }) {
       name, items: items.filter((i) => i.product_id && i.qty > 0), reward_product_id: rewardId || null, reward_qty: rewardQty,
       price: num(price) ?? sum, active,
     }).eq("id", c.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Combo salvo");
     qc.invalidateQueries({ queryKey: ["combos"] });
   }
@@ -199,7 +199,7 @@ function Conta() {
   if (!p) return null;
   async function save() {
     const { error } = await supabase.from("profiles").update({ business_name: name }).eq("id", p!.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Salvo");
     qc.invalidateQueries({ queryKey: ["profile"] });
   }

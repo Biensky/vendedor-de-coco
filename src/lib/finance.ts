@@ -16,7 +16,7 @@ export type SimInput = {
   goalPerDay: number;
   price: number;
   cost: number;
-  loyaltyRequired?: number;
+  loyaltyRequired?: number | undefined;
   rewardQty?: number;
   rewardCost?: number;
   workDays?: number;

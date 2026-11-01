@@ -114,7 +114,7 @@ function DeliverForm({ customerId, credits, pname, onDone }: { customerId: strin
       const q = sel[cr.id] ?? 0;
       if (q > 0) {
         const { error } = await supabase.rpc("deliver_credit", { _customer_id: customerId, _product_id: cr.product_id, _kind: cr.kind, _qty: q });
-        if (error) { setSaving(false); return toast.error(error.message); }
+        if (error) { setSaving(false); { toast.error(error.message); return; } }
       }
     }
     setSaving(false);

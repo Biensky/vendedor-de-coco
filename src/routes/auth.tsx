@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>) => ({ modo: s.modo === "cadastro" ? ("cadastro" as const) : undefined }),
+  validateSearch: (s: Record<string, unknown>): { modo?: "cadastro" } => (s["modo"] === "cadastro" ? { modo: "cadastro" } : {}),
   head: () => ({
     meta: [
       { title: "Entrar — Cocó do Parque" },

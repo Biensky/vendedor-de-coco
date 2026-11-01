@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/app/clientes")({
-  validateSearch: (s: Record<string, unknown>) => ({ novo: s.novo === true || s.novo === "true" ? true : undefined }),
+  validateSearch: (s: Record<string, unknown>): { novo?: boolean } => (s["novo"] === true || s["novo"] === "true" ? { novo: true } : {}),
   component: ClientesPage,
 });
 
@@ -68,7 +68,7 @@ function NewCustomerDialog({ open, onOpenChange }: { open: boolean; onOpenChange
     setSaving(true);
     const { data, error } = await supabase.from("customers").insert({ name, whatsapp, notes }).select("id").single();
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Cliente cadastrado!");
     qc.invalidateQueries({ queryKey: ["customers"] });
     onOpenChange(false);

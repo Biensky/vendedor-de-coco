@@ -37,7 +37,7 @@ function AppLayout() {
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", search: { modo: undefined }, replace: true });
+    navigate({ to: "/auth", replace: true });
   }
 
   return (

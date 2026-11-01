@@ -28,7 +28,7 @@ export function cardUrl(code: string) {
 export function parseScannedCode(text: string): string | null {
   const t = text.trim();
   const m = t.match(/\/c\/([A-Za-z0-9]+)/);
-  if (m) return m[1].toUpperCase();
+  if (m?.[1]) return m[1].toUpperCase();
   if (/^[A-Za-z0-9]{4,12}$/.test(t)) return t.toUpperCase();
   return null;
 }
