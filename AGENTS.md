@@ -21,3 +21,4 @@
 - Card code presentation and WhatsApp messages are shared across customer and seller surfaces to keep recovery instructions consistent.
 - Content routes define leaf metadata; the shared page metadata helper keeps required social fields consistent.
 - Google and Apple sign-in use the managed Lovable OAuth helper and a public `/auth-callback`; navigate to protected pages only after `getUser` confirms the returned session. Invitation-based signup retains its existing email flow because OAuth cannot attach invitation metadata at account creation.
+- Explicit social-account linking must use a supported managed identity-linking operation with proof of both identities; the current helper exposes sign-in only, so never substitute sign-in, raw provider OAuth, or email-based data merging for linking.
