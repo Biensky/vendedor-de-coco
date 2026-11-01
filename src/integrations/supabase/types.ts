@@ -105,9 +105,11 @@ export type Database = {
           code: string
           created_at: string
           id: string
+          last_self_at: string | null
           name: string
           notes: string | null
           stamps: number
+          token: string | null
           vendor_id: string
           whatsapp: string | null
         }
@@ -115,9 +117,11 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
+          last_self_at?: string | null
           name: string
           notes?: string | null
           stamps?: number
+          token?: string | null
           vendor_id?: string
           whatsapp?: string | null
         }
@@ -125,9 +129,11 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
+          last_self_at?: string | null
           name?: string
           notes?: string | null
           stamps?: number
+          token?: string | null
           vendor_id?: string
           whatsapp?: string | null
         }
@@ -139,8 +145,10 @@ export type Database = {
           customer_id: string | null
           id: string
           kind: string
+          origin: string
           product_id: string | null
           qty: number
+          sale_id: string | null
           unit_cost: number
           vendor_id: string
         }
@@ -149,8 +157,10 @@ export type Database = {
           customer_id?: string | null
           id?: string
           kind: string
+          origin?: string
           product_id?: string | null
           qty: number
+          sale_id?: string | null
           unit_cost?: number
           vendor_id?: string
         }
@@ -159,8 +169,10 @@ export type Database = {
           customer_id?: string | null
           id?: string
           kind?: string
+          origin?: string
           product_id?: string | null
           qty?: number
+          sale_id?: string | null
           unit_cost?: number
           vendor_id?: string
         }
@@ -177,6 +189,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
             referencedColumns: ["id"]
           },
         ]
@@ -267,6 +286,9 @@ export type Database = {
           member_role: string
           plan: Database["public"]["Enums"]["plan_status"]
           plan_expires_at: string
+          public_slug: string | null
+          self_max_units: number
+          self_min_interval_min: number
         }
         Insert: {
           active?: boolean
@@ -281,6 +303,9 @@ export type Database = {
           member_role?: string
           plan?: Database["public"]["Enums"]["plan_status"]
           plan_expires_at?: string
+          public_slug?: string | null
+          self_max_units?: number
+          self_min_interval_min?: number
         }
         Update: {
           active?: boolean
@@ -295,6 +320,9 @@ export type Database = {
           member_role?: string
           plan?: Database["public"]["Enums"]["plan_status"]
           plan_expires_at?: string
+          public_slug?: string | null
+          self_max_units?: number
+          self_min_interval_min?: number
         }
         Relationships: []
       }
@@ -356,6 +384,8 @@ export type Database = {
           created_at: string
           customer_id: string | null
           id: string
+          meta: Json
+          origin: string
           payment: string
           take_now: boolean
           total: number
@@ -367,6 +397,8 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           id?: string
+          meta?: Json
+          origin?: string
           payment?: string
           take_now?: boolean
           total?: number
@@ -378,6 +410,8 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           id?: string
+          meta?: Json
+          origin?: string
           payment?: string
           take_now?: boolean
           total?: number
@@ -423,6 +457,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _can_manage: { Args: { _vendor: string }; Returns: boolean }
+      _do_deliver: {
+        Args: {
+          _customer_id: string
+          _kind: string
+          _origin: string
+          _product_id: string
+          _qty: number
+          _uid: string
+        }
+        Returns: string
+      }
+      _do_sale: {
+        Args: {
+          _combo_id: string
+          _customer_id: string
+          _items: Json
+          _origin: string
+          _payment: string
+          _take_now: boolean
+          _uid: string
+        }
+        Returns: string
+      }
+      _self_ctx: {
+        Args: { _slug: string; _token: string }
+        Returns: Record<string, unknown>
+      }
       admin_list_vendors: {
         Args: never
         Returns: {
@@ -482,6 +544,35 @@ export type Database = {
         }
         Returns: string
       }
+      self_card: { Args: { _slug: string; _token: string }; Returns: Json }
+      self_identify: {
+        Args: { _name: string; _slug: string; _whatsapp: string }
+        Returns: string
+      }
+      self_register_sale: {
+        Args: {
+          _combo_id: string
+          _items: Json
+          _payment: string
+          _slug: string
+          _take_now: boolean
+          _token: string
+        }
+        Returns: Json
+      }
+      self_vendor: { Args: { _slug: string }; Returns: Json }
+      self_withdraw: {
+        Args: {
+          _kind: string
+          _product_id: string
+          _qty: number
+          _slug: string
+          _token: string
+        }
+        Returns: Json
+      }
+      undo_delivery: { Args: { _delivery_id: string }; Returns: undefined }
+      undo_sale: { Args: { _sale_id: string }; Returns: undefined }
       vendor_is_active: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {

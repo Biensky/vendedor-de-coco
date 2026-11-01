@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { QrCode, Users, Zap, BarChart3, Settings, LogOut, Shield } from "lucide-react";
+import { QrCode, Users, Zap, BarChart3, Settings, LogOut, Shield, Printer, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { activeQuery, isAdminQuery, planState, profileQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ const nav = [
   { to: "/app", label: "Escanear", icon: QrCode, exact: true },
   { to: "/app/clientes", label: "Clientes", icon: Users },
   { to: "/app/venda", label: "Avulsa", icon: Zap },
+  { to: "/app/cartaz", label: "Cartaz", icon: Printer },
   { to: "/app/painel", label: "Painel", icon: BarChart3, ownerOnly: true },
   { to: "/app/ajustes", label: "Ajustes", icon: Settings, ownerOnly: true },
 ] as const;
@@ -63,6 +64,7 @@ function AppLayout() {
           </div>
         </div>
         <div className="flex gap-1">
+          <Link to="/app/atividade" className="rounded-xl p-2 hover:bg-primary-foreground/10" aria-label="Atividade"><Bell className="size-5" /></Link>
           {isAdmin && (
             <Link to="/admin" className="rounded-xl p-2 hover:bg-primary-foreground/10" aria-label="Admin"><Shield className="size-5" /></Link>
           )}
@@ -93,13 +95,13 @@ function AppLayout() {
       )}
 
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card pb-[env(safe-area-inset-bottom)]">
-        <div className={`mx-auto grid max-w-lg ${items.length === 5 ? "grid-cols-5" : "grid-cols-3"}`}>
+        <div className={`mx-auto grid max-w-lg ${items.length === 6 ? "grid-cols-6" : "grid-cols-4"}`}>
           {items.map((n) => (
             <Link
               key={n.to}
               to={n.to}
               activeOptions={{ exact: "exact" in n }}
-              className="flex flex-col items-center gap-1 py-3 text-xs font-bold text-muted-foreground"
+              className="flex flex-col items-center gap-1 py-3 text-[11px] font-bold text-muted-foreground"
               activeProps={{ className: "text-primary" }}
             >
               <n.icon className="size-6" />
