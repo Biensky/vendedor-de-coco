@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search, Camera, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { uid } from "@/lib/data";
 import { QrScanner } from "@/components/QrScanner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ function ScanPage() {
     queryFn: async () => {
       const term = q.trim();
       const digits = onlyDigits(term);
-      let query = supabase.from("customers").select("id,name,whatsapp,code").limit(10);
+      let query = supabase.from("customers").select("id,name,whatsapp,code").eq("vendor_id", await uid()).limit(10);
       query = digits.length >= 3
         ? query.or(`whatsapp.ilike.%${digits}%,code.ilike.%${term}%`)
         : query.or(`name.ilike.%${term}%,code.ilike.%${term}%`);
@@ -36,7 +37,7 @@ function ScanPage() {
   async function handleScan(text: string) {
     const code = parseScannedCode(text);
     if (!code) { toast.error("QR Code não reconhecido"); return; }
-    const { data } = await supabase.from("customers").select("id").eq("code", code).maybeSingle();
+    const { data } = await supabase.from("customers").select("id").eq("code", code).eq("vendor_id", await uid()).maybeSingle();
     if (!data) { toast.error("Cliente não encontrado neste ponto"); return; }
     navigate({ to: "/app/cliente/$id", params: { id: data.id } });
   }

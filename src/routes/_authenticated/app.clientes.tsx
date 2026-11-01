@@ -4,6 +4,7 @@ import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { uid } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +23,7 @@ function ClientesPage() {
   const { data = [] } = useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
-      const { data } = await supabase.from("customers").select("id,name,whatsapp,stamps,code").order("name");
+      const { data } = await supabase.from("customers").select("id,name,whatsapp,stamps,code").eq("vendor_id", await uid()).order("name");
       return data ?? [];
     },
   });

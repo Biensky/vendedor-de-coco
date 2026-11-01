@@ -13,7 +13,7 @@ export type Combo = {
   active: boolean;
 };
 
-async function uid() {
+export async function uid() {
   const { data } = await supabase.auth.getUser();
   if (!data.user) throw new Error("Não autenticado");
   return data.user.id;
