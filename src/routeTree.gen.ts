@@ -18,6 +18,8 @@ import { Route as CCodeRouteImport } from './routes/c.$code'
 import { Route as VSlugRouteImport } from './routes/v.$slug'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppAjustesRouteImport } from './routes/_authenticated/app.ajustes'
+import { Route as AuthenticatedAppAtividadeRouteImport } from './routes/_authenticated/app.atividade'
+import { Route as AuthenticatedAppCartazRouteImport } from './routes/_authenticated/app.cartaz'
 import { Route as AuthenticatedAppClientesRouteImport } from './routes/_authenticated/app.clientes'
 import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/app.painel'
 import { Route as AuthenticatedAppVendaRouteImport } from './routes/_authenticated/app.venda'
@@ -67,6 +69,17 @@ const AuthenticatedAppAjustesRoute = AuthenticatedAppAjustesRouteImport.update({
   path: '/ajustes',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppAtividadeRoute =
+  AuthenticatedAppAtividadeRouteImport.update({
+    id: '/atividade',
+    path: '/atividade',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppCartazRoute = AuthenticatedAppCartazRouteImport.update({
+  id: '/cartaz',
+  path: '/cartaz',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppClientesRoute =
   AuthenticatedAppClientesRouteImport.update({
     id: '/clientes',
@@ -98,6 +111,8 @@ export interface FileRoutesByFullPath {
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
+  '/app/atividade': typeof AuthenticatedAppAtividadeRoute
+  '/app/cartaz': typeof AuthenticatedAppCartazRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/venda': typeof AuthenticatedAppVendaRoute
@@ -111,6 +126,8 @@ export interface FileRoutesByTo {
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
+  '/app/atividade': typeof AuthenticatedAppAtividadeRoute
+  '/app/cartaz': typeof AuthenticatedAppCartazRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/venda': typeof AuthenticatedAppVendaRoute
@@ -127,6 +144,8 @@ export interface FileRoutesById {
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/_authenticated/app/ajustes': typeof AuthenticatedAppAjustesRoute
+  '/_authenticated/app/atividade': typeof AuthenticatedAppAtividadeRoute
+  '/_authenticated/app/cartaz': typeof AuthenticatedAppCartazRoute
   '/_authenticated/app/clientes': typeof AuthenticatedAppClientesRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/venda': typeof AuthenticatedAppVendaRoute
@@ -143,6 +162,8 @@ export interface FileRouteTypes {
     | '/c/$code'
     | '/v/$slug'
     | '/app/ajustes'
+    | '/app/atividade'
+    | '/app/cartaz'
     | '/app/clientes'
     | '/app/painel'
     | '/app/venda'
@@ -156,6 +177,8 @@ export interface FileRouteTypes {
     | '/c/$code'
     | '/v/$slug'
     | '/app/ajustes'
+    | '/app/atividade'
+    | '/app/cartaz'
     | '/app/clientes'
     | '/app/painel'
     | '/app/venda'
@@ -171,6 +194,8 @@ export interface FileRouteTypes {
     | '/c/$code'
     | '/v/$slug'
     | '/_authenticated/app/ajustes'
+    | '/_authenticated/app/atividade'
+    | '/_authenticated/app/cartaz'
     | '/_authenticated/app/clientes'
     | '/_authenticated/app/painel'
     | '/_authenticated/app/venda'
@@ -251,6 +276,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAjustesRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/atividade': {
+      id: '/_authenticated/app/atividade'
+      path: '/atividade'
+      fullPath: '/app/atividade'
+      preLoaderRoute: typeof AuthenticatedAppAtividadeRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/cartaz': {
+      id: '/_authenticated/app/cartaz'
+      path: '/cartaz'
+      fullPath: '/app/cartaz'
+      preLoaderRoute: typeof AuthenticatedAppCartazRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/clientes': {
       id: '/_authenticated/app/clientes'
       path: '/clientes'
@@ -284,6 +323,8 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAjustesRoute: typeof AuthenticatedAppAjustesRoute
+  AuthenticatedAppAtividadeRoute: typeof AuthenticatedAppAtividadeRoute
+  AuthenticatedAppCartazRoute: typeof AuthenticatedAppCartazRoute
   AuthenticatedAppClientesRoute: typeof AuthenticatedAppClientesRoute
   AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppVendaRoute: typeof AuthenticatedAppVendaRoute
@@ -293,6 +334,8 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAjustesRoute: AuthenticatedAppAjustesRoute,
+  AuthenticatedAppAtividadeRoute: AuthenticatedAppAtividadeRoute,
+  AuthenticatedAppCartazRoute: AuthenticatedAppCartazRoute,
   AuthenticatedAppClientesRoute: AuthenticatedAppClientesRoute,
   AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppVendaRoute: AuthenticatedAppVendaRoute,
