@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CCodeRouteImport } from './routes/c.$code'
 import { Route as VSlugRouteImport } from './routes/v.$slug'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
@@ -48,6 +49,11 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
 } as any)
 const CCodeRoute = CCodeRouteImport.update({
   id: '/c/$code',
@@ -105,9 +111,10 @@ const AuthenticatedAppClienteIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
@@ -121,8 +128,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
@@ -138,9 +146,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/_authenticated/app/ajustes': typeof AuthenticatedAppAjustesRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/app'
+    | '/auth/callback'
     | '/c/$code'
     | '/v/$slug'
     | '/app/ajustes'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/auth/callback'
     | '/c/$code'
     | '/v/$slug'
     | '/app/ajustes'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/_authenticated/app'
+    | '/auth/callback'
     | '/c/$code'
     | '/v/$slug'
     | '/_authenticated/app/ajustes'
@@ -206,7 +218,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   CCodeRoute: typeof CCodeRoute
   VSlugRoute: typeof VSlugRoute
 }
@@ -247,6 +259,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app'
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/c/$code': {
       id: '/c/$code'
@@ -359,10 +378,20 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   CCodeRoute: CCodeRoute,
   VSlugRoute: VSlugRoute,
 }
