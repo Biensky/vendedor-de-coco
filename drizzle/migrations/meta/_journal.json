@@ -29,6 +29,13 @@
       "when": 1793503000898,
       "tag": "0003_check_invite",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793503609549,
+      "tag": "0004_self_service",
+      "breakpoints": true
     }
   ]
 }
