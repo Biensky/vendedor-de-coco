@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as CCodeRouteImport } from './routes/c.$code'
+import { Route as VSlugRouteImport } from './routes/v.$slug'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppAjustesRouteImport } from './routes/_authenticated/app.ajustes'
 import { Route as AuthenticatedAppClientesRouteImport } from './routes/_authenticated/app.clientes'
@@ -49,6 +50,11 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
 const CCodeRoute = CCodeRouteImport.update({
   id: '/c/$code',
   path: '/c/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VSlugRoute = VSlugRouteImport.update({
+  id: '/v/$slug',
+  path: '/v/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/c/$code': typeof CCodeRoute
+  '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/c/$code': typeof CCodeRoute
+  '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/c/$code': typeof CCodeRoute
+  '/v/$slug': typeof VSlugRoute
   '/_authenticated/app/ajustes': typeof AuthenticatedAppAjustesRoute
   '/_authenticated/app/clientes': typeof AuthenticatedAppClientesRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/c/$code'
+    | '/v/$slug'
     | '/app/ajustes'
     | '/app/clientes'
     | '/app/painel'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/c/$code'
+    | '/v/$slug'
     | '/app/ajustes'
     | '/app/clientes'
     | '/app/painel'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/c/$code'
+    | '/v/$slug'
     | '/_authenticated/app/ajustes'
     | '/_authenticated/app/clientes'
     | '/_authenticated/app/painel'
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CCodeRoute: typeof CCodeRoute
+  VSlugRoute: typeof VSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       path: '/c/$code'
       fullPath: '/c/$code'
       preLoaderRoute: typeof CCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v/$slug': {
+      id: '/v/$slug'
+      path: '/v/$slug'
+      fullPath: '/v/$slug'
+      preLoaderRoute: typeof VSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app/': {
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CCodeRoute: CCodeRoute,
+  VSlugRoute: VSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
