@@ -7,8 +7,10 @@ import { toast } from "sonner";
 import { combosQuery, loyaltyQuery, productsQuery, profileQuery } from "@/lib/data";
 import { brl } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { pageMeta } from "@/lib/page-meta";
 
 export const Route = createFileRoute("/_authenticated/app/cartaz")({
+  head: () => pageMeta("Meu QR / Cartaz", "Cartaz do vendedor para imprimir e acessar o autoatendimento."),
   component: Cartaz,
 });
 

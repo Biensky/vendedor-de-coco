@@ -12,8 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Equipe } from "@/components/Equipe";
+import { pageMeta } from "@/lib/page-meta";
 
 export const Route = createFileRoute("/_authenticated/app/ajustes")({
+  head: () => pageMeta("Ajustes", "Produtos, fidelidade, combos e equipe do estabelecimento."),
   component: Ajustes,
 });
 

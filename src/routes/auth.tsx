@@ -14,6 +14,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Entre ou crie sua conta de vendedor no Cocó do Parque." },
       { property: "og:title", content: "Entrar — Cocó do Parque" },
       { property: "og:description", content: "Acesse seu painel de vendas e fidelidade." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,

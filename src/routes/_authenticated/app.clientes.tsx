@@ -10,8 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { pageMeta } from "@/lib/page-meta";
 
 export const Route = createFileRoute("/_authenticated/app/clientes")({
+  head: () => pageMeta("Clientes", "Clientes e cartões fidelidade do vendedor."),
   validateSearch: (s: Record<string, unknown>): { novo?: boolean } => (s["novo"] === true || s["novo"] === "true" ? { novo: true } : {}),
   component: ClientesPage,
 });
