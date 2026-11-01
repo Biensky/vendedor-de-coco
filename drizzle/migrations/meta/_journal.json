@@ -43,6 +43,13 @@
       "when": 1793503644336,
       "tag": "0005_fix_do_sale_loyalty_record",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793505065294,
+      "tag": "0006_self_card_access_protection",
+      "breakpoints": true
     }
   ]
 }

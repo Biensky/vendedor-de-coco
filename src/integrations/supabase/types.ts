@@ -434,6 +434,77 @@ export type Database = {
           },
         ]
       }
+      self_access_attempts: {
+        Row: {
+          blocked_until: string | null
+          customer_id: string
+          failures: number
+        }
+        Insert: {
+          blocked_until?: string | null
+          customer_id: string
+          failures?: number
+        }
+        Update: {
+          blocked_until?: string | null
+          customer_id?: string
+          failures?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "self_access_attempts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      self_security_events: {
+        Row: {
+          blocked_until: string
+          created_at: string
+          customer_id: string | null
+          customer_name: string
+          id: string
+          kind: string
+          vendor_id: string
+        }
+        Insert: {
+          blocked_until: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name: string
+          id?: string
+          kind?: string
+          vendor_id: string
+        }
+        Update: {
+          blocked_until?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          id?: string
+          kind?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "self_security_events_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "self_security_events_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -548,6 +619,15 @@ export type Database = {
       self_identify: {
         Args: { _name: string; _slug: string; _whatsapp: string }
         Returns: string
+      }
+      self_identify_secure: {
+        Args: {
+          _card_suffix?: string
+          _name: string
+          _slug: string
+          _whatsapp: string
+        }
+        Returns: Json
       }
       self_register_sale: {
         Args: {
