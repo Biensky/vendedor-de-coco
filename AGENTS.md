@@ -20,3 +20,4 @@
 - Existing-customer token recovery uses `self_identify_secure` with server-side card proof, transaction locks and persistent attempt state; failures return structured results rather than exceptions so lockouts and seller security events commit. The legacy identification entry cannot recover existing tokens.
 - Card code presentation and WhatsApp messages are shared across customer and seller surfaces to keep recovery instructions consistent.
 - Content routes define leaf metadata; the shared page metadata helper keeps required social fields consistent.
+- Google and Apple sign-in use the managed Lovable OAuth helper and a public `/auth-callback`; navigate to protected pages only after `getUser` confirms the returned session. Invitation-based signup retains its existing email flow because OAuth cannot attach invitation metadata at account creation.
