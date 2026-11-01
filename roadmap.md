@@ -3,3 +3,4 @@
 - [x] Testar cadastro, recuperação correta/incorreta, bloqueio e acesso com token.
 - [x] Habilitar Google e Apple e adicionar os botões de entrada com retorno seguro.
 - [x] Verificar a tela de entrada e a configuração dos dois provedores (autorização pessoal externa não testada).
+- [ ] Vincular Google e Apple à conta existente com prova dos dois acessos, sem duplicar vendedor — depende de uma operação de vinculação suportada pelo login gerenciado; o recurso atual só inicia novas sessões.
