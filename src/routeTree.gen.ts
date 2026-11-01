@@ -16,6 +16,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as CCodeRouteImport } from './routes/c.$code'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppClientesRouteImport } from './routes/_authenticated/app.clientes'
+import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/app.painel'
 import { Route as AuthenticatedAppVendaRouteImport } from './routes/_authenticated/app.venda'
 import { Route as AuthenticatedAppClienteIdRouteImport } from './routes/_authenticated/app.cliente.$id'
 
@@ -54,6 +55,11 @@ const AuthenticatedAppClientesRoute =
     path: '/clientes',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppPainelRoute = AuthenticatedAppPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppVendaRoute = AuthenticatedAppVendaRouteImport.update({
   id: '/venda',
   path: '/venda',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/c/$code': typeof CCodeRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
+  '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/venda': typeof AuthenticatedAppVendaRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/cliente/$id': typeof AuthenticatedAppClienteIdRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/c/$code': typeof CCodeRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
+  '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/venda': typeof AuthenticatedAppVendaRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/cliente/$id': typeof AuthenticatedAppClienteIdRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/c/$code': typeof CCodeRoute
   '/_authenticated/app/clientes': typeof AuthenticatedAppClientesRoute
+  '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/venda': typeof AuthenticatedAppVendaRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/cliente/$id': typeof AuthenticatedAppClienteIdRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/c/$code'
     | '/app/clientes'
+    | '/app/painel'
     | '/app/venda'
     | '/app/'
     | '/app/cliente/$id'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/c/$code'
     | '/app/clientes'
+    | '/app/painel'
     | '/app/venda'
     | '/app'
     | '/app/cliente/$id'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/c/$code'
     | '/_authenticated/app/clientes'
+    | '/_authenticated/app/painel'
     | '/_authenticated/app/venda'
     | '/_authenticated/app/'
     | '/_authenticated/app/cliente/$id'
@@ -188,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppClientesRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/painel': {
+      id: '/_authenticated/app/painel'
+      path: '/painel'
+      fullPath: '/app/painel'
+      preLoaderRoute: typeof AuthenticatedAppPainelRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/venda': {
       id: '/_authenticated/app/venda'
       path: '/venda'
@@ -207,6 +226,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppClientesRoute: typeof AuthenticatedAppClientesRoute
+  AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppVendaRoute: typeof AuthenticatedAppVendaRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppClienteIdRoute: typeof AuthenticatedAppClienteIdRoute
@@ -214,6 +234,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppClientesRoute: AuthenticatedAppClientesRoute,
+  AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppVendaRoute: AuthenticatedAppVendaRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppClienteIdRoute: AuthenticatedAppClienteIdRoute,
