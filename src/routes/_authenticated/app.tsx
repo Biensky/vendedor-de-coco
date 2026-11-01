@@ -22,16 +22,22 @@ const nav = [
   { to: "/app", label: "Escanear", icon: QrCode, exact: true },
   { to: "/app/clientes", label: "Clientes", icon: Users },
   { to: "/app/venda", label: "Avulsa", icon: Zap },
-  { to: "/app/painel", label: "Painel", icon: BarChart3 },
-  { to: "/app/ajustes", label: "Ajustes", icon: Settings },
+  { to: "/app/painel", label: "Painel", icon: BarChart3, ownerOnly: true },
+  { to: "/app/ajustes", label: "Ajustes", icon: Settings, ownerOnly: true },
 ] as const;
 
 function AppLayout() {
   const { data: profile } = useQuery(profileQuery);
   const { data: isAdmin } = useQuery(isAdminQuery);
+  const { data: active } = useQuery(activeQuery);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const plan = planState(profile);
+  const { pathname } = useLocation();
+  const isOwner = profile?.member_role === "owner";
+  const plan = planState(isOwner ? profile : undefined);
+  const blocked = isOwner ? plan.blocked : active === false;
+  const ownerOnly = !isOwner && profile && /^\/app\/(painel|ajustes)/.test(pathname);
+  const items = nav.filter((n) => isOwner || !("ownerOnly" in n));
 
   async function signOut() {
     await qc.cancelQueries();
@@ -47,7 +53,13 @@ function AppLayout() {
           <img src="/icon-192.png" alt="" width={36} height={36} className="rounded-xl" />
           <div className="leading-tight">
             <p className="font-display text-lg font-bold">{profile?.business_name ?? "Cocó do Parque"}</p>
-            {profile && <p className="text-xs opacity-90">{plan.label}{profile.plan === "trial" && plan.daysLeft > 0 ? ` · ${plan.daysLeft} dias` : ""}</p>}
+            {profile && (
+              <p className="text-xs opacity-90">
+                {isOwner
+                  ? `Responsável · ${plan.label}${profile.plan === "trial" && plan.daysLeft > 0 ? ` · ${plan.daysLeft} dias` : ""}`
+                  : `Vendedor${profile.display_name ? ` · ${profile.display_name}` : ""}`}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex gap-1">
@@ -58,27 +70,31 @@ function AppLayout() {
         </div>
       </header>
 
-      {plan.blocked ? (
+      {blocked ? (
         <div className="m-4 rounded-3xl bg-card p-6 text-center shadow-soft">
           <h2 className="text-2xl font-bold text-destructive">Conta suspensa</h2>
           <p className="mt-2 text-muted-foreground">
-            {profile?.plan === "trial" ? "Seu teste grátis terminou." : "Seu plano está suspenso."} Regularize pelo WhatsApp {SUPPORT_WHATSAPP_LABEL} para voltar a registrar vendas.
+            {isOwner
+              ? `${profile?.plan === "trial" ? "Seu teste grátis terminou." : "Seu plano está suspenso."} Regularize pelo WhatsApp ${SUPPORT_WHATSAPP_LABEL} para voltar a registrar vendas.`
+              : "Seu acesso está bloqueado. Fale com o responsável do estabelecimento."}
           </p>
-          <Button asChild variant="hero" size="xl" className="mt-5 w-full">
-            <a href={`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent("Olá! Quero regularizar minha conta do Cocó do Parque.")}`} target="_blank" rel="noreferrer">
-              Falar no WhatsApp
-            </a>
-          </Button>
+          {isOwner && (
+            <Button asChild variant="hero" size="xl" className="mt-5 w-full">
+              <a href={`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent("Olá! Quero regularizar minha conta do Cocó do Parque.")}`} target="_blank" rel="noreferrer">
+                Falar no WhatsApp
+              </a>
+            </Button>
+          )}
         </div>
       ) : (
         <main className="p-4">
-          <Outlet />
+          {ownerOnly ? <p className="text-center text-muted-foreground">Área exclusiva do responsável.</p> : <Outlet />}
         </main>
       )}
 
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card pb-[env(safe-area-inset-bottom)]">
-        <div className="mx-auto grid max-w-lg grid-cols-5">
-          {nav.map((n) => (
+        <div className={`mx-auto grid max-w-lg ${items.length === 5 ? "grid-cols-5" : "grid-cols-3"}`}>
+          {items.map((n) => (
             <Link
               key={n.to}
               to={n.to}
