@@ -25,6 +25,9 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [business, setBusiness] = useState("");
+  const [kind, setKind] = useState<"dono" | "vendedor">("dono");
+  const [invite, setInvite] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const navigate = useNavigate();
@@ -37,7 +40,7 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/app`, data: { business_name: business || "Meu ponto" } },
+          options: { emailRedirectTo: `${window.location.origin}/app`, data: kind === "dono" ? { business_name: business || "Meu ponto", display_name: displayName } : { invite_code: invite.trim().toUpperCase(), display_name: displayName } },
         });
         if (error) throw error;
         if (data.session) navigate({ to: "/app" });
@@ -67,10 +70,27 @@ function AuthPage() {
         ) : (
           <form onSubmit={submit} className="space-y-4">
             {signup && (
-              <div>
-                <Label>Nome do seu ponto</Label>
+              <>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button type="button" variant={kind === "dono" ? "hero" : "soft"} onClick={() => setKind("dono")}>Sou o responsável</Button>
+                  <Button type="button" variant={kind === "vendedor" ? "hero" : "soft"} onClick={() => setKind("vendedor")}>Tenho convite</Button>
+                </div>
+                <div>
+                  <Label>Seu nome</Label>
+                  <Input className="h-12 text-base" required value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                </div>
+                {kind === "dono" ? (
+                  <div>
+                    <Label>Nome do estabelecimento</Label>
                 <Input className="h-12 text-base" placeholder="Ex.: Coco do Zé" value={business} onChange={(e) => setBusiness(e.target.value)} />
-              </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Label>Código de convite</Label>
+                    <Input className="h-12 text-base uppercase" required placeholder="Peça ao responsável" value={invite} onChange={(e) => setInvite(e.target.value)} />
+                  </div>
+                )}
+              </>
             )}
             <div>
               <Label>E-mail</Label>
