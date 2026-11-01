@@ -37,6 +37,10 @@ function AuthPage() {
     setLoading(true);
     try {
       if (signup) {
+        if (kind === "vendedor") {
+          const { data: est } = await supabase.rpc("check_invite", { _code: invite });
+          if (!est) throw new Error("Código de convite inválido");
+        }
         const { data, error } = await supabase.auth.signUp({
           email,
           password,

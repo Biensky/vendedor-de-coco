@@ -446,6 +446,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_invite: { Args: { _code: string }; Returns: string }
       deliver_credit: {
         Args: {
           _customer_id: string

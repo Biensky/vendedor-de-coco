@@ -61,7 +61,7 @@ function Admin() {
             <span className="rounded-full bg-secondary px-3 py-1 text-sm font-bold">{label[v.plan]}</span>
           </div>
           <p className="mt-2 text-sm">
-            Vence: <b>{new Date(v.plan_expires_at).toLocaleDateString("pt-BR")}</b> · Clientes: <b>{v.customers}</b> · Vendas no mês: <b>{v.sales_month}</b> ({brl(v.revenue_month)})
+            Vence: <b>{new Date(v.plan_expires_at).toLocaleDateString("pt-BR")}</b> · Vendedores: <b>{v.sellers}</b> · Clientes: <b>{v.customers}</b> · Vendas no mês: <b>{v.sales_month}</b> ({brl(v.revenue_month)})
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="hero" onClick={() => setPlan(v.id, "active", 30)}>Ativar +30 dias</Button>
