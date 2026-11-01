@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Equipe } from "@/components/Equipe";
 
 export const Route = createFileRoute("/_authenticated/app/ajustes")({
   component: Ajustes,
@@ -21,15 +22,17 @@ function Ajustes() {
     <div className="space-y-4">
       <h1 className="text-2xl font-bold text-primary-deep">Ajustes</h1>
       <Tabs defaultValue="produtos">
-        <TabsList className="grid h-12 w-full grid-cols-4">
+        <TabsList className="grid h-12 w-full grid-cols-5 text-xs">
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
           <TabsTrigger value="fidelidade">Selos</TabsTrigger>
           <TabsTrigger value="combos">Combos</TabsTrigger>
+          <TabsTrigger value="equipe">Equipe</TabsTrigger>
           <TabsTrigger value="conta">Conta</TabsTrigger>
         </TabsList>
         <TabsContent value="produtos"><Produtos /></TabsContent>
         <TabsContent value="fidelidade"><Fidelidade /></TabsContent>
         <TabsContent value="combos"><Combos /></TabsContent>
+        <TabsContent value="equipe"><Equipe /></TabsContent>
         <TabsContent value="conta"><Conta /></TabsContent>
       </Tabs>
     </div>

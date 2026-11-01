@@ -15,6 +15,20 @@
       "when": 1793502291712,
       "tag": "0001_fix_register_sale",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793502920592,
+      "tag": "0002_establishments_and_sellers",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793503000898,
+      "tag": "0003_check_invite",
+      "breakpoints": true
     }
   ]
 }

@@ -13,7 +13,7 @@ export type Combo = {
   active: boolean;
 };
 
-async function uid() {
+export async function uid() {
   const { data } = await supabase.auth.getUser();
   if (!data.user) throw new Error("Não autenticado");
   return data.user.id;
@@ -72,3 +72,12 @@ export function planState(p: { plan: string; plan_expires_at: string } | undefin
   if (p.plan === "trial") return { blocked: daysLeft <= 0, daysLeft, label: "Teste grátis" };
   return { blocked: false, daysLeft, label: "Ativo" };
 }
+
+export const activeQuery = queryOptions({
+  queryKey: ["vendor-active"],
+  queryFn: async () => {
+    const id = await uid();
+    const { data } = await supabase.rpc("vendor_is_active", { _uid: id });
+    return !!data;
+  },
+});

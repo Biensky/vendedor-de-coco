@@ -255,29 +255,44 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active: boolean
           business_name: string
           created_at: string
           daily_goal: number
+          display_name: string | null
           email: string | null
+          establishment_id: string | null
           id: string
+          invite_code: string | null
+          member_role: string
           plan: Database["public"]["Enums"]["plan_status"]
           plan_expires_at: string
         }
         Insert: {
+          active?: boolean
           business_name?: string
           created_at?: string
           daily_goal?: number
+          display_name?: string | null
           email?: string | null
+          establishment_id?: string | null
           id: string
+          invite_code?: string | null
+          member_role?: string
           plan?: Database["public"]["Enums"]["plan_status"]
           plan_expires_at?: string
         }
         Update: {
+          active?: boolean
           business_name?: string
           created_at?: string
           daily_goal?: number
+          display_name?: string | null
           email?: string | null
+          establishment_id?: string | null
           id?: string
+          invite_code?: string | null
+          member_role?: string
           plan?: Database["public"]["Enums"]["plan_status"]
           plan_expires_at?: string
         }
@@ -420,6 +435,7 @@ export type Database = {
           plan_expires_at: string
           revenue_month: number
           sales_month: number
+          sellers: number
         }[]
       }
       admin_set_plan: {
@@ -430,6 +446,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_invite: { Args: { _code: string }; Returns: string }
       deliver_credit: {
         Args: {
           _customer_id: string
@@ -439,6 +456,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      est_of: { Args: { _uid: string }; Returns: string }
       gen_code: { Args: never; Returns: string }
       get_public_card: { Args: { _code: string }; Returns: Json }
       has_role: {
@@ -447,6 +465,12 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      is_est_owner: { Args: never; Returns: boolean }
+      my_est: { Args: never; Returns: string }
+      owner_set_member_active: {
+        Args: { _active: boolean; _member: string }
+        Returns: undefined
       }
       register_sale: {
         Args: {
