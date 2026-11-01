@@ -7,6 +7,7 @@ import { brl } from "@/lib/format";
 import { grossProfit, periodStart, simulate, type Period } from "@/lib/finance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { teamQuery } from "@/components/Equipe";
 
 export const Route = createFileRoute("/_authenticated/app/painel")({
   component: Painel,
@@ -25,13 +26,15 @@ function Painel() {
   const [period, setPeriod] = useState<Period>("hoje");
   const { data: products = [] } = useQuery(productsQuery);
   const pname = (id: string | null) => products.find((p) => p.id === id)?.name ?? "—";
+  const { data: team = [] } = useQuery(teamQuery);
+  const memberName = (id: string) => { const m = team.find((t) => t.id === id); return m?.display_name || m?.email || "Vendedor"; };
 
   const { data } = useQuery({
     queryKey: ["painel", period],
     queryFn: async () => {
       const start = periodStart(period).toISOString();
       const [sales, items, deliveries, credits] = await Promise.all([
-        supabase.from("sales").select("id,customer_id,total,cost,created_at").gte("created_at", start).limit(5000),
+        supabase.from("sales").select("id,vendor_id,customer_id,total,cost,created_at").gte("created_at", start).limit(5000),
         supabase.from("sale_items").select("product_id,qty,is_reward").gte("created_at", start).limit(10000),
         supabase.from("deliveries").select("customer_id,kind,qty,unit_cost").gte("created_at", start).limit(10000),
         supabase.from("credits").select("product_id,qty").gt("qty", 0).limit(10000),
@@ -56,7 +59,10 @@ function Painel() {
         s.forEach((x) => x.customer_id && (counts[x.customer_id] = (counts[x.customer_id] ?? 0) + 1));
         returning = [...ids].filter((id) => prev.has(id) || (counts[id] ?? 0) > 1).length;
       }
-      return { revenue, cost, rewardsCost, byProduct, pending, attended: ids.size, returning, count: s.length };
+      const rank: Record<string, { total: number; n: number }> = {};
+      for (const x of s) { const r = (rank[x.vendor_id] ??= { total: 0, n: 0 }); r.total += Number(x.total); r.n += 1; }
+      const ranking = Object.entries(rank).sort((a, b) => b[1].total - a[1].total);
+      return { revenue, cost, rewardsCost, byProduct, pending, attended: ids.size, returning, count: s.length, ranking };
     },
   });
 
@@ -79,6 +85,13 @@ function Painel() {
             <Stat label="Lucro bruto" value={brl(grossProfit(data.revenue, data.cost, data.rewardsCost))} strong />
             <Stat label="Clientes atendidos" value={String(data.attended)} />
             <Stat label="Voltaram" value={String(data.returning)} />
+          </div>
+          <div className="rounded-2xl bg-card p-4 shadow-soft">
+            <h2 className="font-semibold">Ranking de vendedores</h2>
+            {data.ranking.length === 0 && <p className="text-muted-foreground">Nenhuma venda no período.</p>}
+            {data.ranking.map(([vid, r], i) => (
+              <p key={vid} className="flex justify-between font-bold"><span>{i + 1}º {memberName(vid)} <span className="text-sm font-normal text-muted-foreground">({r.n} vendas)</span></span><span>{brl(r.total)}</span></p>
+            ))}
           </div>
           <div className="rounded-2xl bg-card p-4 shadow-soft">
             <h2 className="font-semibold">Vendido por produto ({data.count} vendas)</h2>
