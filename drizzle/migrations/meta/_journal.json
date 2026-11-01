@@ -36,6 +36,13 @@
       "when": 1793503609549,
       "tag": "0004_self_service",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793503644336,
+      "tag": "0005_fix_do_sale_loyalty_record",
+      "breakpoints": true
     }
   ]
 }
