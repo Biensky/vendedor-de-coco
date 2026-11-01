@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SaleForm } from "@/components/SaleForm";
+import { pageMeta } from "@/lib/page-meta";
 
 export const Route = createFileRoute("/_authenticated/app/venda")({
+  head: () => pageMeta("Venda avulsa", "Registre uma venda rápida no caixa sem cliente identificado."),
   component: () => (
     <div className="space-y-4">
       <div>

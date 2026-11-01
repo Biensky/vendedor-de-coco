@@ -9,8 +9,10 @@ import { QrScanner } from "@/components/QrScanner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { onlyDigits, parseScannedCode } from "@/lib/format";
+import { pageMeta } from "@/lib/page-meta";
 
 export const Route = createFileRoute("/_authenticated/app/")({
+  head: () => pageMeta("Escanear cliente", "Identifique o cartão do cliente para vender ou entregar créditos."),
   component: ScanPage,
 });
 

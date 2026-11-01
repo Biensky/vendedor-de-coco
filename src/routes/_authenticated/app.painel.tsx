@@ -8,8 +8,10 @@ import { grossProfit, periodStart, simulate, type Period } from "@/lib/finance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { teamQuery } from "@/components/Equipe";
+import { pageMeta } from "@/lib/page-meta";
 
 export const Route = createFileRoute("/_authenticated/app/painel")({
+  head: () => pageMeta("Painel financeiro", "Receita, custos, lucro e vendas da equipe."),
   component: Painel,
 });
 

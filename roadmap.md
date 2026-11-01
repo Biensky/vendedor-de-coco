@@ -1,0 +1,3 @@
+- [x] Proteger identificação pública e registrar bloqueios após cinco erros por 30 minutos.
+- [x] Destacar código, salvar/reencaminhar cartão e orientar recuperação.
+- [x] Testar cadastro, recuperação correta/incorreta, bloqueio e acesso com token.

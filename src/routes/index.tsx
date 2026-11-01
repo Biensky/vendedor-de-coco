@@ -10,6 +10,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Cartão fidelidade com QR Code, créditos para retirar depois e painel de lucro para vendedores de coco, açaí, caldo de cana, pastel e food truck." },
       { property: "og:title", content: "Cocó do Parque — fidelidade para vendedores ambulantes" },
       { property: "og:description", content: "Seus clientes voltam mais. Selos, brindes, combos e lucro do dia no celular." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Landing,

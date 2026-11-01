@@ -13,6 +13,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { name: "description", content: "Gestão de vendedores e planos." },
       { property: "og:title", content: "Super-admin — Cocó do Parque" },
       { property: "og:description", content: "Gestão de vendedores e planos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

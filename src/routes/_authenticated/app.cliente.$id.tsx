@@ -6,13 +6,22 @@ import { ShoppingCart, PackageCheck, History, MessageCircle, Minus, Plus } from 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { loyaltyQuery, productsQuery } from "@/lib/data";
-import { brl, cardUrl, dateTime, waNumber } from "@/lib/format";
+import { brl, cardUrl, dateTime, saveCardWhatsApp } from "@/lib/format";
+import { CardCode } from "@/components/CardCode";
 import { StampCard } from "@/components/StampCard";
 import { SaleForm } from "@/components/SaleForm";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export const Route = createFileRoute("/_authenticated/app/cliente/$id")({
+  head: () => ({ meta: [
+    { title: "Ficha do cliente — Cocó do Parque" },
+    { name: "description", content: "Vendas, créditos e reenvio do cartão do cliente." },
+    { property: "og:title", content: "Ficha do cliente — Cocó do Parque" },
+    { property: "og:description", content: "Consulte o cartão e as movimentações do cliente." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ClientePage,
 });
 
@@ -29,18 +38,12 @@ function ClientePage() {
     queryKey: ["credits", id],
     queryFn: async () => (await supabase.from("credits").select("*").eq("customer_id", id).gt("qty", 0)).data ?? [],
   });
-  const { data: profile } = useQuery({
-    queryKey: ["profile-name"],
-    queryFn: async () => (await supabase.from("profiles").select("business_name").maybeSingle()).data,
-  });
 
   if (!c) return <p className="text-center text-muted-foreground">Carregando...</p>;
   const pname = (pid: string) => products.find((p) => p.id === pid)?.name ?? "Produto";
   const url = cardUrl(c.code);
   const wa = c.whatsapp
-    ? `https://wa.me/${waNumber(c.whatsapp)}?text=${encodeURIComponent(
-        `Olá ${c.name}! Este é seu cartão fidelidade do ${profile?.business_name ?? "Cocó do Parque"} 🥥\nMostre o QR Code a cada compra: ${url}`,
-      )}`
+    ? saveCardWhatsApp(c.whatsapp, c.code, c.name)
     : null;
 
   return (
@@ -51,7 +54,7 @@ function ClientePage() {
             <h1 className="text-2xl font-bold text-primary-deep">{c.name}</h1>
             <p className="text-muted-foreground">{c.whatsapp || "sem WhatsApp"}</p>
             {c.notes && <p className="mt-1 text-sm">{c.notes}</p>}
-            <p className="mt-1 font-mono text-sm font-bold tracking-widest">{c.code}</p>
+            <div className="mt-3"><CardCode code={c.code} /></div>
           </div>
           <QRCodeSVG value={url} size={84} />
         </div>
@@ -80,7 +83,7 @@ function ClientePage() {
         <Button variant="soft" size="xl" onClick={() => setSheet("historico")}><History /> Histórico</Button>
         {wa && (
           <Button asChild variant="soft" size="xl">
-            <a href={wa} target="_blank" rel="noreferrer"><MessageCircle /> Enviar cartão por WhatsApp</a>
+            <a href={wa} target="_blank" rel="noreferrer"><MessageCircle /> Reenviar cartão por WhatsApp</a>
           </Button>
         )}
       </div>
