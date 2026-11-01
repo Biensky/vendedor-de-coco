@@ -24,6 +24,11 @@ export function cardUrl(code: string) {
   return `${origin}/c/${code}`;
 }
 
+export function saveCardWhatsApp(phone: string, code: string, name?: string) {
+  const message = `${name ? `Olá ${name}! ` : ""}Guarde seu cartão fidelidade: ${cardUrl(code)}\nCódigo do cartão: ${code}\nPara acessar de outro celular, informe os 4 últimos caracteres: ${code.slice(-4)}.`;
+  return `https://wa.me/${waNumber(phone)}?text=${encodeURIComponent(message)}`;
+}
+
 /** Extracts a customer code from a scanned QR (full card URL or raw code). */
 export function parseScannedCode(text: string): string | null {
   const t = text.trim();

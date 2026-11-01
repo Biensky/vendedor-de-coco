@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Minus, Plus, ShoppingCart, PackageCheck, CheckCircle2 } from "lucide-react";
+import { Minus, Plus, ShoppingCart, PackageCheck, CheckCircle2, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { brl, dateTime, PAYMENTS } from "@/lib/format";
+import { brl, dateTime, PAYMENTS, saveCardWhatsApp } from "@/lib/format";
+import { CardCode } from "@/components/CardCode";
 import { StampCard } from "@/components/StampCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,8 @@ type Vendor = {
 };
 type Card = {
   name: string;
+  code: string;
+  whatsapp: string;
   stamps: number;
   credit_items: { product_id: string; product: string; kind: string; qty: number }[];
   history: { type: string; at: string; total?: number; qty?: number; product?: string }[];
@@ -31,10 +34,12 @@ type Confirm = { title: string; detail: string; at: string };
 export const Route = createFileRoute("/v/$slug")({
   head: () => ({
     meta: [
-      { title: "Cartão Fidelidade — autoatendimento" },
+      { title: "Autoatendimento — Cocó do Parque" },
       { name: "description", content: "Registre sua compra, acompanhe seus selos e retire seus créditos." },
       { property: "og:title", content: "Cartão Fidelidade — autoatendimento" },
       { property: "og:description", content: "Escaneou, registrou, ganhou selo." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -48,6 +53,7 @@ function SelfPage() {
   const key = `coco-token-${slug}`;
   const [token, setToken] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [newCard, setNewCard] = useState(false);
   useEffect(() => {
     setToken(localStorage.getItem(key));
     setReady(true);
@@ -75,13 +81,13 @@ function SelfPage() {
   if (!token)
     return (
       <Shell vendor={vendor}>
-        <Identify slug={slug} onToken={(t) => { localStorage.setItem(key, t); setToken(t); }} />
+        <Identify slug={slug} onToken={(t, isNew) => { localStorage.setItem(key, t); setToken(t); setNewCard(isNew); }} />
       </Shell>
     );
 
   return (
     <Shell vendor={vendor}>
-      <CustomerArea slug={slug} token={token} vendor={vendor} onLogout={() => { localStorage.removeItem(key); setToken(null); }} />
+      <CustomerArea slug={slug} token={token} vendor={vendor} newCard={newCard} onLogout={() => { localStorage.removeItem(key); setToken(null); setNewCard(false); }} />
     </Shell>
   );
 }
@@ -101,32 +107,45 @@ function Shell({ vendor, children }: { vendor?: Vendor; children: React.ReactNod
   );
 }
 
-function Identify({ slug, onToken }: { slug: string; onToken: (t: string) => void }) {
+function Identify({ slug, onToken }: { slug: string; onToken: (t: string, isNew: boolean) => void }) {
   const [name, setName] = useState("");
   const [wa, setWa] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [needsCode, setNeedsCode] = useState(false);
+  const [suffix, setSuffix] = useState("");
+  const [blockedUntil, setBlockedUntil] = useState<string | null>(null);
+  const [forgot, setForgot] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setLoading(true); setErr("");
-    const { data, error } = await supabase.rpc("self_identify", { _slug: slug, _name: name, _whatsapp: wa });
+    const { data, error } = await supabase.rpc("self_identify_secure", { _slug: slug, _name: name, _whatsapp: wa, _card_suffix: needsCode ? suffix : "" });
     setLoading(false);
     if (error) { setErr(errMsg(error)); return; }
-    onToken(data as string);
+    const r = data as unknown as { status: string; token?: string; is_new?: boolean; message?: string; remaining?: number; blocked_until?: string };
+    if (r.status === "ok" && r.token) { onToken(r.token, !!r.is_new); return; }
+    setNeedsCode(true);
+    setErr(`${r.message ?? "Não foi possível entrar."}${r.remaining != null ? ` Restam ${r.remaining} tentativas.` : ""}`);
+    setBlockedUntil(r.blocked_until ?? null);
   }
   return (
     <form onSubmit={submit} className="space-y-4">
       <h2 className="text-xl font-bold">Seu cartão fidelidade</h2>
-      <p className="text-muted-foreground">Informe seu nome e WhatsApp. Se já tiver cadastro, a gente te reconhece.</p>
-      <div><Label>Nome</Label><Input className="h-14 text-lg" required value={name} onChange={(e) => setName(e.target.value)} /></div>
-      <div><Label>WhatsApp</Label><Input className="h-14 text-lg" inputMode="tel" required placeholder="(61) 99999-9999" value={wa} onChange={(e) => setWa(e.target.value)} /></div>
-      {err && <p className="font-semibold text-destructive">{err}</p>}
-      <Button type="submit" variant="hero" size="xl" className="w-full" disabled={loading}>Entrar no meu cartão</Button>
+      <p className="text-muted-foreground">Já tem cartão? Tenha o código em mãos para acessar neste aparelho.</p>
+      <div><Label htmlFor="self-name">Nome</Label><Input id="self-name" className="h-14 text-lg" required value={name} onChange={(e) => setName(e.target.value)} /></div>
+      <div><Label htmlFor="self-wa">WhatsApp</Label><Input id="self-wa" className="h-14 text-lg" inputMode="tel" required placeholder="(61) 99999-9999" value={wa} onChange={(e) => { setWa(e.target.value); setNeedsCode(false); setSuffix(""); setErr(""); setBlockedUntil(null); }} /></div>
+      {needsCode && <div><Label htmlFor="self-code">4 últimos caracteres do cartão</Label><Input id="self-code" className="h-14 text-center font-mono text-2xl uppercase" autoComplete="off" maxLength={4} value={suffix} onChange={(e) => setSuffix(e.target.value)} /></div>}
+      {err && <p role="alert" className="font-semibold text-destructive">{err}</p>}
+      {blockedUntil && <p className="text-sm text-muted-foreground">Tente novamente após {new Date(blockedUntil).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}.</p>}
+      <Button type="submit" variant="hero" size="xl" className="w-full" disabled={loading}>{loading ? "Verificando..." : "Entrar no meu cartão"}</Button>
+      <Button type="button" variant="ghost" className="w-full" onClick={() => setForgot(true)}>Esqueci meu código</Button>
+      {forgot && <p role="status" className="text-sm text-muted-foreground">Peça ao vendedor para reenviar seu cartão pelo WhatsApp. O código está no cartão e na mensagem enviada por ele.</p>}
     </form>
   );
 }
 
-function CustomerArea({ slug, token, vendor, onLogout }: { slug: string; token: string; vendor: Vendor; onLogout: () => void }) {
+function CustomerArea({ slug, token, vendor, newCard, onLogout }: { slug: string; token: string; vendor: Vendor; newCard: boolean; onLogout: () => void }) {
   const qc = useQueryClient();
   const [mode, setMode] = useState<null | "compra" | "retirar">(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
@@ -177,8 +196,11 @@ function CustomerArea({ slug, token, vendor, onLogout }: { slug: string; token: 
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Olá, {card.name.split(" ")[0]}!</h2>
-        <button className="text-sm font-semibold text-muted-foreground underline" onClick={onLogout}>Não sou eu</button>
+        <Button variant="ghost" size="sm" onClick={onLogout}>Não sou eu</Button>
       </div>
+      {newCard && <p className="text-center text-lg font-bold text-primary-deep">Seu cartão foi criado! Guarde seu código.</p>}
+      <CardCode code={card.code} />
+      {card.whatsapp && <Button asChild variant="soft" size="lg" className="h-auto min-h-12 w-full whitespace-normal"><a href={saveCardWhatsApp(card.whatsapp, card.code)} target="_blank" rel="noreferrer"><MessageCircle className="shrink-0" /> Salvar meu cartão no WhatsApp</a></Button>}
       {vendor.loyalty?.active && (
         <div>
           <StampCard stamps={card.stamps} required={vendor.loyalty.required} />

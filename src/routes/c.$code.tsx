@@ -4,6 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
 import { brl, cardUrl, dateTime } from "@/lib/format";
 import { StampCard } from "@/components/StampCard";
+import { CardCode } from "@/components/CardCode";
 
 type Card = {
   name: string;
@@ -22,6 +23,8 @@ export const Route = createFileRoute("/c/$code")({
       { name: "description", content: "Seu cartão fidelidade: selos, créditos a retirar e histórico." },
       { property: "og:title", content: "Meu cartão fidelidade" },
       { property: "og:description", content: "Mostre este QR Code ao vendedor a cada compra." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -51,7 +54,7 @@ function CardPage() {
           <div className="mx-auto mt-4 w-fit rounded-2xl bg-card p-3 ring-4 ring-secondary">
             <QRCodeSVG value={cardUrl(data.code)} size={220} />
           </div>
-          <p className="mt-2 font-mono text-lg font-bold tracking-widest">{data.code}</p>
+          <div className="mt-4"><CardCode code={data.code} /></div>
           <p className="text-sm text-muted-foreground">Mostre esta tela ao vendedor</p>
         </div>
 

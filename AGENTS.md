@@ -17,3 +17,5 @@
 - New vendor defaults (products, loyalty, combo) are created by the `handle_new_user` auth trigger.
 - Financial math lives in `src/lib/finance.ts` with tests in `src/test/finance.test.ts`.
 - Self-service (`/v/{slug}`) runs only through `self_*` RPCs validated by seller `public_slug` + customer `token` (stored in localStorage); core logic lives in internal `_do_sale`/`_do_deliver` (no client EXECUTE) shared with vendor RPCs. `sales.meta` stores what a sale changed so `undo_sale`/`undo_delivery` can reverse it.
+- Existing-customer token recovery uses `self_identify_secure` with server-side card proof, transaction locks and persistent attempt state; failures return structured results rather than exceptions so lockouts and seller security events commit. The legacy identification entry cannot recover existing tokens.
+- Card code presentation and WhatsApp messages are shared across customer and seller surfaces to keep recovery instructions consistent.
