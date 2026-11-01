@@ -3,9 +3,9 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { Database } from "@/integrations/supabase/types";
 
 // Runs against an explicitly supplied temporary seller, never arbitrary accounts.
-const slug = process.env.SELF_TEST_SLUG;
+const slug = process.env['SELF_TEST_SLUG'];
 describe.skipIf(!slug)("Server-enforced self-service card access", () => {
-  const client = createClient<Database>(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+  const client = createClient<Database>(import.meta.env['VITE_SUPABASE_URL'], import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'], { auth: { persistSession: false, autoRefreshToken: false } });
   const phone = `619${String(Date.now()).slice(-8)}`;
   let token = "";
   let code = "";
