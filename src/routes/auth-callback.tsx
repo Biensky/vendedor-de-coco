@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { pageMeta } from "@/lib/page-meta";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/auth/callback")({
+export const Route = createFileRoute("/auth-callback")({
   head: () => pageMeta("Concluindo entrada", "Retorno seguro da entrada com Google ou Apple."),
   component: OAuthCallback,
 });

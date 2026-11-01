@@ -12,9 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthCallbackRouteImport } from './routes/auth-callback'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
-import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CCodeRouteImport } from './routes/c.$code'
 import { Route as VSlugRouteImport } from './routes/v.$slug'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
@@ -40,6 +40,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth-callback',
+  path: '/auth-callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -49,11 +54,6 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => AuthRoute,
 } as any)
 const CCodeRoute = CCodeRouteImport.update({
   id: '/c/$code',
@@ -111,10 +111,10 @@ const AuthenticatedAppClienteIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/auth-callback': typeof AuthCallbackRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
-  '/auth/callback': typeof AuthCallbackRoute
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
@@ -128,9 +128,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/auth-callback': typeof AuthCallbackRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/app/ajustes': typeof AuthenticatedAppAjustesRoute
@@ -146,10 +146,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/auth-callback': typeof AuthCallbackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
-  '/auth/callback': typeof AuthCallbackRoute
   '/c/$code': typeof CCodeRoute
   '/v/$slug': typeof VSlugRoute
   '/_authenticated/app/ajustes': typeof AuthenticatedAppAjustesRoute
@@ -166,9 +166,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/auth-callback'
     | '/admin'
     | '/app'
-    | '/auth/callback'
     | '/c/$code'
     | '/v/$slug'
     | '/app/ajustes'
@@ -183,8 +183,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/auth-callback'
     | '/admin'
-    | '/auth/callback'
     | '/c/$code'
     | '/v/$slug'
     | '/app/ajustes'
@@ -200,9 +200,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/auth-callback'
     | '/_authenticated/admin'
     | '/_authenticated/app'
-    | '/auth/callback'
     | '/c/$code'
     | '/v/$slug'
     | '/_authenticated/app/ajustes'
@@ -218,7 +218,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   CCodeRoute: typeof CCodeRoute
   VSlugRoute: typeof VSlugRoute
 }
@@ -246,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth-callback': {
+      id: '/auth-callback'
+      path: '/auth-callback'
+      fullPath: '/auth-callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -259,13 +267,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app'
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof AuthRoute
     }
     '/c/$code': {
       id: '/c/$code'
@@ -378,20 +379,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface AuthRouteChildren {
-  AuthCallbackRoute: typeof AuthCallbackRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthCallbackRoute: AuthCallbackRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
+  AuthRoute: AuthRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   CCodeRoute: CCodeRoute,
   VSlugRoute: VSlugRoute,
 }
