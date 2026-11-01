@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
+import { Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +35,25 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const navigate = useNavigate();
+
+  async function socialLogin(provider: "google" | "apple") {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth(provider, {
+        redirect_uri: `${window.location.origin}/auth/callback`,
+      });
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) throw new Error("Sessão não confirmada");
+      await navigate({ to: "/app" });
+    } catch {
+      toast.error(`Não foi possível entrar com ${provider === "google" ? "Google" : "Apple"}. Tente novamente.`);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +92,15 @@ function AuthPage() {
           <img src="/icon-192.png" alt="" width={64} height={64} className="rounded-2xl" />
           <h1 className="mt-3 text-2xl font-bold text-primary-deep">{signup ? "Criar minha conta" : "Entrar"}</h1>
         </div>
+        {!signup && !sent && <div className="mb-5 space-y-3">
+          <Button type="button" variant="soft" size="xl" className="w-full" disabled={loading} onClick={() => socialLogin("google")}>
+            <span aria-hidden="true" className="font-sans text-xl font-bold">G</span> Entrar com Google
+          </Button>
+          <Button type="button" variant="soft" size="xl" className="w-full" disabled={loading} onClick={() => socialLogin("apple")}>
+            <Apple aria-hidden="true" /> Entrar com Apple
+          </Button>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground"><span className="h-px flex-1 bg-border" />ou com e-mail<span className="h-px flex-1 bg-border" /></div>
+        </div>}
         {sent ? (
           <p className="text-center">Enviamos um link de confirmação para <b>{email}</b>. Abra seu e-mail para ativar a conta.</p>
         ) : (
@@ -111,9 +141,9 @@ function AuthPage() {
             </Button>
           </form>
         )}
-        <button className="mt-5 w-full text-center font-semibold text-primary" onClick={() => { setSignup(!signup); setSent(false); }}>
+        <Button variant="ghost" className="mt-5 h-auto min-h-12 w-full whitespace-normal text-center font-semibold text-primary" onClick={() => { setSignup(!signup); setSent(false); }}>
           {signup ? "Já tenho conta — entrar" : "Não tenho conta — criar"}
-        </button>
+        </Button>
       </div>
     </div>
   );

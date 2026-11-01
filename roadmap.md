@@ -1,3 +1,5 @@
 - [x] Proteger identificação pública e registrar bloqueios após cinco erros por 30 minutos.
 - [x] Destacar código, salvar/reencaminhar cartão e orientar recuperação.
 - [x] Testar cadastro, recuperação correta/incorreta, bloqueio e acesso com token.
+- [ ] Habilitar Google e Apple e adicionar os botões de entrada com retorno seguro.
+- [ ] Verificar a tela de entrada e a configuração dos dois provedores.
