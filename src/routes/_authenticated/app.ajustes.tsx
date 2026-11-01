@@ -198,10 +198,14 @@ function Conta() {
   const { data: p } = useQuery(profileQuery);
   const qc = useQueryClient();
   const [name, setName] = useState("");
-  useEffect(() => { if (p) setName(p.business_name); }, [p]);
+  const [maxU, setMaxU] = useState(5);
+  const [mins, setMins] = useState(10);
+  useEffect(() => { if (p) { setName(p.business_name); setMaxU(p.self_max_units); setMins(p.self_min_interval_min); } }, [p]);
   if (!p) return null;
   async function save() {
-    const { error } = await supabase.from("profiles").update({ business_name: name }).eq("id", p!.id);
+    const { error } = await supabase.from("profiles").update({
+      business_name: name, self_max_units: Math.max(1, maxU), self_min_interval_min: Math.max(0, mins),
+    }).eq("id", p!.id);
     if (error) { toast.error(error.message); return; }
     toast.success("Salvo");
     qc.invalidateQueries({ queryKey: ["profile"] });
@@ -209,6 +213,11 @@ function Conta() {
   return (
     <div className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
       <div><Label>Nome do ponto</Label><Input className="h-11 text-base" value={name} onChange={(e) => setName(e.target.value)} /></div>
+      <p className="pt-2 font-bold">Autoatendimento (QR impresso)</p>
+      <div className="grid grid-cols-2 gap-2">
+        <div><Label>Máx. unidades por registro</Label><Input type="number" min={1} className="h-11 text-base" value={maxU} onChange={(e) => setMaxU(Number(e.target.value))} /></div>
+        <div><Label>Intervalo mínimo (min)</Label><Input type="number" min={0} className="h-11 text-base" value={mins} onChange={(e) => setMins(Number(e.target.value))} /></div>
+      </div>
       <Button variant="hero" size="xl" className="w-full" onClick={save}>Salvar</Button>
       <p className="text-sm text-muted-foreground">
         Plano: <b>{p.plan === "trial" ? "Teste grátis" : p.plan === "active" ? "Ativo" : "Suspenso"}</b> · vence em {new Date(p.plan_expires_at).toLocaleDateString("pt-BR")}

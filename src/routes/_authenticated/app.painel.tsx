@@ -24,29 +24,35 @@ function Stat({ label, value, strong }: { label: string; value: string; strong?:
 
 function Painel() {
   const [period, setPeriod] = useState<Period>("hoje");
+  const [origin, setOrigin] = useState<"todas" | "vendedor" | "autoatendimento">("todas");
   const { data: products = [] } = useQuery(productsQuery);
   const pname = (id: string | null) => products.find((p) => p.id === id)?.name ?? "—";
   const { data: team = [] } = useQuery(teamQuery);
   const memberName = (id: string) => { const m = team.find((t) => t.id === id); return m?.display_name || m?.email || "Vendedor"; };
 
   const { data } = useQuery({
-    queryKey: ["painel", period],
+    queryKey: ["painel", period, origin],
     queryFn: async () => {
       const start = periodStart(period).toISOString();
+      let sq = supabase.from("sales").select("id,vendor_id,customer_id,total,cost,created_at,origin").gte("created_at", start).limit(5000);
+      let dq = supabase.from("deliveries").select("customer_id,kind,qty,unit_cost,origin").gte("created_at", start).limit(10000);
+      if (origin !== "todas") { sq = sq.eq("origin", origin); dq = dq.eq("origin", origin); }
       const [sales, items, deliveries, credits] = await Promise.all([
-        supabase.from("sales").select("id,vendor_id,customer_id,total,cost,created_at").gte("created_at", start).limit(5000),
-        supabase.from("sale_items").select("product_id,qty,is_reward").gte("created_at", start).limit(10000),
-        supabase.from("deliveries").select("customer_id,kind,qty,unit_cost").gte("created_at", start).limit(10000),
+        sq,
+        supabase.from("sale_items").select("sale_id,product_id,qty,is_reward").gte("created_at", start).limit(10000),
+        dq,
         supabase.from("credits").select("product_id,qty").gt("qty", 0).limit(10000),
       ]);
       const s = sales.data ?? [];
+      const saleIds = new Set(s.map((x) => x.id));
       const revenue = s.reduce((a, x) => a + Number(x.total), 0);
       const cost = s.reduce((a, x) => a + Number(x.cost), 0);
       const rewardsCost = (deliveries.data ?? []).filter((d) => d.kind === "brinde").reduce((a, d) => a + d.qty * Number(d.unit_cost), 0);
       const byProduct: Record<string, number> = {};
-      for (const it of items.data ?? []) if (!it.is_reward && it.product_id) byProduct[it.product_id] = (byProduct[it.product_id] ?? 0) + it.qty;
+      for (const it of items.data ?? []) if (saleIds.has(it.sale_id) && !it.is_reward && it.product_id) byProduct[it.product_id] = (byProduct[it.product_id] ?? 0) + it.qty;
       const pending: Record<string, number> = {};
       for (const c of credits.data ?? []) pending[c.product_id] = (pending[c.product_id] ?? 0) + c.qty;
+      const selfCount = s.filter((x) => x.origin === "autoatendimento").length;
 
       const ids = new Set<string>();
       s.forEach((x) => x.customer_id && ids.add(x.customer_id));
@@ -62,7 +68,7 @@ function Painel() {
       const rank: Record<string, { total: number; n: number }> = {};
       for (const x of s) { const r = (rank[x.vendor_id] ??= { total: 0, n: 0 }); r.total += Number(x.total); r.n += 1; }
       const ranking = Object.entries(rank).sort((a, b) => b[1].total - a[1].total);
-      return { revenue, cost, rewardsCost, byProduct, pending, attended: ids.size, returning, count: s.length, ranking };
+      return { revenue, cost, rewardsCost, byProduct, pending, attended: ids.size, returning, count: s.length, ranking, selfCount };
     },
   });
 
@@ -76,6 +82,16 @@ function Painel() {
           </Button>
         ))}
       </div>
+      <div className="grid grid-cols-3 gap-2">
+        {(["todas", "vendedor", "autoatendimento"] as const).map((o) => (
+          <Button key={o} size="sm" variant={origin === o ? "sun" : "soft"} onClick={() => setOrigin(o)}>
+            {o === "todas" ? "Todas" : o === "vendedor" ? "Vendedor" : "Autoatend."}
+          </Button>
+        ))}
+      </div>
+      {data && origin === "todas" && data.selfCount > 0 && (
+        <p className="text-center text-sm text-muted-foreground">{data.selfCount} de {data.count} vendas foram por autoatendimento</p>
+      )}
       {data && (
         <>
           <div className="grid grid-cols-2 gap-3">
