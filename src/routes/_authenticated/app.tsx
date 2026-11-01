@@ -1,8 +1,8 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QrCode, Users, Zap, BarChart3, Settings, LogOut, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { isAdminQuery, planState, profileQuery } from "@/lib/data";
+import { activeQuery, isAdminQuery, planState, profileQuery } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_LABEL } from "@/lib/format";
 
